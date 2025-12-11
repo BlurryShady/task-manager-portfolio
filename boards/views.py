@@ -449,10 +449,10 @@ def column_delete(request, pk):
 
 @login_required
 def task_create(request, project_pk):
-    # Use the same permission check as other project views
+    
     project = user_can_see_project_or_403(request, project_pk)
     if not isinstance(project, Project):
-        return project  # could be HttpResponseForbidden
+        return project  
 
     workspace = project.workspace  # used to filter assignees
 
@@ -461,7 +461,7 @@ def task_create(request, project_pk):
         if form.is_valid():
             task = form.save(commit=False)
             task.project = project
-            task.creator = request.user  # you already use this in archive permission
+            task.creator = request.user  
 
             # Default to first column if none chosen
             if not task.column_id:

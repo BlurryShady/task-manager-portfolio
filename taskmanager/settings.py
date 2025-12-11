@@ -171,17 +171,28 @@ EMAIL_BACKEND = os.getenv(
     "EMAIL_BACKEND",
     "django.core.mail.backends.console.EmailBackend",
 )
+
 DEFAULT_FROM_EMAIL = os.getenv(
     "DEFAULT_FROM_EMAIL",
     "Task Manager <noreply@taskmanager.local>",
 )
+
+# Brevo / SMTP settings
+EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True") == "True"
+
 SITE_NAME = "Task Manager"
+
 PLAUSIBLE_DOMAIN = os.getenv("PLAUSIBLE_DOMAIN", "")
 PLAUSIBLE_SCRIPT = os.getenv(
     "PLAUSIBLE_SCRIPT",
     "https://plausible.io/js/script.js",
 )
 ANALYTICS_ENABLED = bool(PLAUSIBLE_DOMAIN)
+
 ENABLE_TELEMETRY = os.getenv("ENABLE_TELEMETRY", "1") not in {
     "0",
     "false",
