@@ -1,0 +1,23 @@
+{% if partial %}
+<form method="post"
+      action="{% if form.instance.pk %}{% url 'task_edit' form.instance.pk %}
+              {% else %}{% url 'task_create' project.pk %}{% endif %}">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Save</button>
+</form>
+{% else %}
+{% extends "base.html" %}
+{% block title %}{% if form.instance.pk %}Edit Task{% else %}New Task{% endif %}{% endblock %}
+{% block content %}
+  <div class="card">
+    <form method="post"
+          action="{% if form.instance.pk %}{% url 'task_edit' form.instance.pk %}
+                  {% else %}{% url 'task_create' project.pk %}{% endif %}">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Save</button>
+    </form>
+  </div>
+{% endblock %}
+{% endif %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Workspace · {{ ws.name }}{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>{{ ws.name }}</h2>
+  <p>
+    <a href="{% url 'project_create' ws.pk %}">+ New Board</a> |
+    <a href="{% url 'workspace_delete' ws.pk %}">Delete Workspace</a>
+  </p>
+
+  <h3>Members</h3>
+  <ul>
+    <li><strong>Owner:</strong> {{ ws.owner.username }}</li>
+    {% for m in members %}
+      <li>{{ m.user.username }} {% if m.role != 'owner' %}<form style="display:inline" method="post" action="{% url 'workspace_remove_member' ws.pk m.user_id %}">{% csrf_token %}<button>Remove</button></form>{% endif %}</li>
+    {% empty %}
+      <li>No members yet.</li>
+    {% endfor %}
+  </ul>
+
+  {% if request.user == ws.owner %}
+  <h4>Invite member</h4>
+  <form method="post" action="{% url 'workspace_invite_member' ws.pk %}">
+    {% csrf_token %} {{ invite_form.as_p }}
+    <button type="submit">Invite</button>
+  </form>
+  {% endif %}
+
+  <h3>Boards</h3>
+  <ul>
+    {% for p in projects %}
+      <li><a href="{% url 'project_detail' p.pk %}">{{ p.title }}</a></li>
+    {% empty %}
+      <li>No boards yet.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

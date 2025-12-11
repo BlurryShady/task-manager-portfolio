@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Link expired{% endblock %}
+{% block content %}
+<div class="card auth-card">
+  <h2>Activation link not valid</h2>
+  <p>The confirmation link you used is invalid or has already been used.</p>
+  <p>You can <a href="{% url 'signup' %}">create a new account</a> or try signing in if you’ve already activated your profile.</p>
+</div>
+{% endblock %}

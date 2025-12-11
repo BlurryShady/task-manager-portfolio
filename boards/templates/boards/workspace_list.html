@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Your Workspaces{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>Your Workspaces</h2>
+  <p class="muted">Create and manage boards. Invite teammates from a workspace.</p>
+
+  <h3 class="section-head">Owned</h3>
+  {% if owned %}
+    <ul class="list">
+      {% for ws in owned %}
+        <li><a href="{% url 'workspace_detail' ws.pk %}">{{ ws.name }}</a></li>
+        {# If your field is "title", use {{ ws.title|default:ws.name }} #}
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="muted">You don’t own any workspaces yet.</p>
+  {% endif %}
+
+  <h3 class="section-head" style="margin-top:16px;">Member of</h3>
+  {% if member %}
+    <ul class="list">
+      {% for ws in member %}
+        <li><a href="{% url 'workspace_detail' ws.pk %}">{{ ws.name }}</a></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="muted">You aren’t a member of any workspaces yet.</p>
+  {% endif %}
+
+  <p style="margin-top:12px;">
+    <a href="{% url 'workspace_create' %}">+ New Workspace</a>
+  </p>
+</div>
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% block title %}Board - {{ project.title }}{% endblock %}
+
+{% block content %}
+<div class="card">
+
+  <div class="board-title">
+    <h2>{{ project.title }}</h2>
+    <span class="hotkey-tip">Press <kbd>C</kbd> to add a column · <kbd>N</kbd> to add a task</span>
+  </div>
+
+  <div class="board-actions">
+    <a id="link-add-column" data-hotkey="c"
+       class="btn btn-sm btn-primary"
+       href="{% url 'column_create' project.pk %}?partial=1"
+       data-modal-open>
+      + Add Column
+    </a>
+
+    <a id="link-add-task" data-hotkey="n"
+       class="btn btn-sm"
+       href="{% url 'task_create' project.pk %}?partial=1"
+       data-modal-open>
+      + Add Task
+    </a>
+
+    <a class="btn btn-sm btn-ghost danger-link"
+       href="{% url 'project_delete' project.pk %}">
+      Delete Board
+    </a>
+  </div>
+
+  <!-- Filters -->
+  <form method="get" class="filters" style="margin:8px 0">
+    <label>Assignee:
+      <select name="assignee">
+        <option value="">All</option>
+        <option value="me" {% if filters.assignee == 'me' %}selected{% endif %}>Me</option>
+        {% for uid, uname in members %}
+          <option value="{{ uid }}" {% if filters.assignee == uid|stringformat:'s' %}selected{% endif %}>{{ uname }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label>Tag:
+      <select name="tag">
+        <option value="">All</option>
+        {% for t in tags %}
+          <option value="{{ t.id }}" {% if filters.tag == t.id|stringformat:'s' %}selected{% endif %}>{{ t.name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label>Priority:
+      <select name="priority">
+        <option value="">Any</option>
+        <option value="low" {% if filters.priority == 'low' %}selected{% endif %}>Low</option>
+        <option value="medium" {% if filters.priority == 'medium' %}selected{% endif %}>Medium</option>
+        <option value="high" {% if filters.priority == 'high' %}selected{% endif %}>High</option>
+      </select>
+    </label>
+
+    <label>
+      <input type="checkbox" name="overdue" value="1" {% if filters.overdue == '1' %}checked{% endif %}>
+      Overdue only
+    </label>
+
+    <a href="{% url 'project_clear' project.pk %}" data-modal-open>Clear</a>
+  </form>
+
+  <!-- Board columns -->
+  <div class="columns">
+    {% for col in columns %}
+      <div class="column col-{{ col.name|slugify }}" style="--col-color: {{ col.color }}">
+        <div class="column-head">
+          <strong class="column-title">
+            {{ col.name }}
+            <span class="count">{{ col.filtered_tasks|length }}</span>
+          </strong>
+          <span class="muted actions">
+            <a href="{% url 'column_rename' col.pk %}?partial=1" data-modal-open>Rename</a> ·
+            <a class="danger-link" href="{% url 'column_delete' col.pk %}">Delete</a>
+          </span>
+        </div>
+
+        <ul class="task-list dropzone" data-column-id="{{ col.pk }}">
+          {% if not col.filtered_tasks %}
+            <li class="empty"><em>No tasks</em></li>
+          {% endif %}
+
+          {% for t in col.filtered_tasks %}
+            <li class="task-card" draggable="true" data-task-id="{{ t.pk }}">
+              <div class="task-top">
+                <strong class="task-title">{{ t.title }}</strong>
+
+                {% with p=t.priority %}
+                  <span class="prio" title="Priority {{ t.get_priority_display }}">
+                    <span class="prio-dot prio-{{ p|default:'low' }}"></span>
+                    <span class="sr-only">Priority {{ t.get_priority_display }}</span>
+                  </span>
+                {% endwith %}
+              </div>
+
+              {# DESCRIPTION (shows if present; safe fallback across common field names) #}
+              {% firstof t.description t.details t.note t.content t.body as desc %}
+              {% if desc %}
+                <p class="task-desc">{{ desc|striptags }}</p>
+              {% endif %}
+
+              {% if t.due_date %}
+                <div class="muted">Due: {{ t.due_date }}</div>
+              {% endif %}
+
+              {% if t.assignees.all %}
+                <div class="assignees">
+                  {% for u in t.assignees.all %}
+                    <span class="pill">@{{ u.username }}</span>
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              {% if t.tags.all %}
+                <div class="tags">
+                  {% for g in t.tags.all %}
+                    <span class="chip">#{{ g.name }}</span>
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              <div class="task-actions">
+                <a href="{% url 'task_edit' t.pk %}?partial=1" data-modal-open>Edit</a> ·
+                <a class="danger-link" href="{% url 'task_archive' t.pk %}">Archive</a>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+
+        <p style="margin:8px 12px;">
+          <a class="btn btn-sm"
+             href="{% url 'task_create' project.pk %}?partial=1&column={{ col.pk }}"
+             data-modal-open>
+            + Add Task
+          </a>
+        </p>
+      </div>
+    {% empty %}
+      <p>No columns yet.</p>
+    {% endfor %}
+  </div>
+
+  <!-- Footer actions (optional duplicate for bottom of page) -->
+  <p style="margin-top:12px;">
+    <a href="{% url 'column_create' project.pk %}?partial=1" data-modal-open>+ Add Column</a> |
+    <a href="{% url 'project_delete' project.pk %}">Delete Board</a>
+  </p>
+
+</div>
+{% endblock content %}

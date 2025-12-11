@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Confirm your email{% endblock %}
+{% block content %}
+<div class="card auth-card">
+  <h2>Check your inbox</h2>
+  <p>We sent a confirmation link to <strong>{{ email }}</strong>. Click the link in that email to activate your account.</p>
+  <p>If you don’t see it within a minute, peek in your spam folder or request a new invite.</p>
+  <p style="margin-top:12px;">Already verified? <a href="{% url 'login' %}">Sign in</a>.</p>
+</div>
+{% endblock %}

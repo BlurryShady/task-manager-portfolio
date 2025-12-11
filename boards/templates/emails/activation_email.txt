@@ -1,0 +1,10 @@
+Hi {{ user.username }},
+
+Thanks for joining {{ site_name }}!
+
+Please confirm your email address by clicking the link below:
+{{ activation_url }}
+
+If you didn’t create this account, you can safely ignore this message.
+
+— The {{ site_name }} team

@@ -1,0 +1,16 @@
+<form id="modal-form" action="{{ form_action|default:request.path }}" method="post">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+
+  {% for field in form.visible_fields %}
+    <p>
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label><br>
+      {{ field }}
+      {% if field.errors %}
+        <span class="error">{{ field.errors|join:", " }}</span>
+      {% endif %}
+    </p>
+  {% endfor %}
+
+  <button type="submit">Save</button>
+</form>

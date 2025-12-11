@@ -1,0 +1,11 @@
+<form method="post" action="{{ action }}" class="stack">
+  {% csrf_token %}
+  <h3 style="margin:0 0 6px 0;">{{ title }}</h3>
+  <p class="muted" style="margin:0 0 12px 0;">{{ body }}</p>
+  <div class="row-actions" style="display:flex;gap:8px;justify-content:flex-end;">
+    <button class="btn btn-primary" type="submit">
+      {{ confirm_label|default:"Confirm" }}
+    </button>
+    <button type="button" class="btn btn-ghost" data-modal-close>Cancel</button>
+  </div>
+</form>

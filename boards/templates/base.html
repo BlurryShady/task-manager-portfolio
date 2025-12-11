@@ -1,0 +1,103 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
+
+<meta name="description" content="Task Manager — a sleek, glassmorphic productivity board to organize your tasks with clarity and focus.">
+<meta name="keywords" content="Task Manager, Productivity App, Kanban Board, Django, Blurry Shady, Full Stack">
+<meta name="author" content="Blurry Shady">
+
+<!-- Open Graph (for link previews) -->
+<meta property="og:title" content="Task Manager by Blurry Shady">
+<meta property="og:description" content="A clean and simple Django-based task manager built by Blurry Shady.">
+<meta property="og:image" content="{% static 'images/preview.png' %}">
+<meta property="og:url" content="https://tasks.blurryshady.dev">
+<meta name="twitter:card" content="summary_large_image">
+
+{% load static %}
+
+<link rel="icon" href="{% static 'img/favicon.ico' %}?v=1">
+<link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/favicon-32x32.png' %}?v=1">
+<link rel="icon" type="image/png" sizes="16x16" href="{% static 'img/favicon-16x16.png' %}?v=1">
+<link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}?v=1">
+<link rel="mask-icon" href="{% static 'img/safari-pinned-tab.svg' %}?v=1" color="#0b1220">
+<link rel="manifest" href="{% static 'img/site.webmanifest' %}?v=1">  {# optional #}
+
+<!-- helpful for browser UI colors -->
+<meta name="theme-color" content="#0b0f16">
+<meta name="msapplication-TileColor" content="#0b0f16">
+<link rel="shortcut icon" href="{% static 'img/favicon.ico' %}?v=1">  {# old-IE fallback #}
+
+  {# App CSS (keep last) #}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2025-11-07-2">
+
+  {# App JS #}
+  <script src="{% static 'js/app.js' %}?v=20251107c" defer></script>
+
+  {# Optional per-page head injections #}
+  {% block extra_head %}{% endblock %}
+
+  {% if ANALYTICS_ENABLED and PLAUSIBLE_DOMAIN %}
+    <script
+      defer
+      data-domain="{{ PLAUSIBLE_DOMAIN }}"
+      src="{{ PLAUSIBLE_SCRIPT }}"
+    ></script>
+  {% endif %}
+</head>
+<body>
+
+  <header class="topbar">
+    <a class="brand" href="/">{{ SITE_NAME }}</a>
+    {% if request.user.is_authenticated %}
+      <span class="topbar-user">@{{ request.user.username }}</span>
+    {% endif %}
+    <nav>
+      {% if request.user.is_authenticated %}
+        <form class="logout-form" method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="topbar-link">Logout</button>
+        </form>
+      {% else %}
+        <a class="topbar-link" href="{% url 'login' %}">Login</a>
+        <a class="topbar-link" href="{% url 'signup' %}">Register</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main class="wrap">
+    {% block content %}{% endblock %}
+  </main>
+
+  {# Toasts #}
+  {% if messages %}
+    <div id="toast-container">
+      {% for message in messages %}
+        <div class="toast {% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll('#toast-container .toast').forEach((t, i) => {
+          setTimeout(() => t.classList.add('fade'), 2500 + i * 300);
+          setTimeout(() => t.remove(), 3500 + i * 300);
+        });
+      });
+    </script>
+  {% endif %}
+
+  {# Modal #}
+  <dialog id="app-modal">
+    <form method="dialog" id="modal-close" class="modal-close-row">
+      <button class="close" aria-label="Close">✕</button>
+    </form>
+    <div id="modal-body"></div>
+  </dialog>
+
+  {# Optional per-page scripts #}
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,12 @@
+{# confirm_delete.html #}
+{% extends "base.html" %}
+{% block title %}Confirm Delete{% endblock %}
+{% block content %}
+<div class="card">
+  <p>Delete: <strong>{{ obj }}</strong> ?</p>
+  <form method="post">{% csrf_token %}
+    <button type="submit">Yes, delete</button>
+    <a href="{{ back_url }}">Cancel</a>
+  </form>
+</div>
+{% endblock %}

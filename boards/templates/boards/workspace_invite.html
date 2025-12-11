@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Invite Member{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>Invite to {{ ws.name }}</h2>
+  <form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Invite</button>
+  </form>
+</div>
+{% endblock %}

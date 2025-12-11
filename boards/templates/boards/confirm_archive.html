@@ -1,0 +1,12 @@
+{# confirm_archive.html #}
+{% extends "base.html" %}
+{% block title %}Archive Task{% endblock %}
+{% block content %}
+<div class="card">
+  <p>Archive: <strong>{{ task.title }}</strong> ?</p>
+  <form method="post">{% csrf_token %}
+    <button type="submit">Archive</button>
+    <a href="{% url 'project_detail' task.project.pk %}">Cancel</a>
+  </form>
+</div>
+{% endblock %}

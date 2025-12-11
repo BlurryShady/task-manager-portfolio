@@ -1,0 +1,12 @@
+# Python / Django
+__pycache__/
+*.pyc
+env/
+.venv/
+db.sqlite3
+
+# Static build folder
+staticfiles/
+
+# Environment variables
+.env

@@ -1,0 +1,11 @@
+Hi {{ user.username }},
+
+Welcome to {{ site_name }}! Your workspace dashboard is ready.
+
+Here are a few quick ideas:
+• Create a new workspace and invite collaborators.
+• Spin up a board to track backlog → in progress → done.
+• Use comments to keep context with every task.
+
+Thanks for building with us,
+The {{ site_name }} team

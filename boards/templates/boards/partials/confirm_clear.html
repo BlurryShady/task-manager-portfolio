@@ -1,0 +1,11 @@
+<form method="post" action="{% url 'project_clear' project.pk %}">
+  {% csrf_token %}
+  <h3 style="margin:0 0 8px 0;">Clear all tasks?</h3>
+  <p class="muted" style="margin:0 0 12px 0;">
+    This will permanently delete every task on “{{ project.title }}”.
+  </p>
+  <div style="display:flex; gap:8px;">
+    <button class="btn btn-primary">Yes, clear all</button>
+    <button type="button" class="btn btn-ghost" data-modal-close>Cancel</button>
+  </div>
+</form>
