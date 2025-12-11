@@ -1,5 +1,4 @@
 import logging
-
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login
@@ -37,6 +36,9 @@ from .permissions import (
     user_is_workspace_owner,
 )
 from .telemetry import log_activity
+import logging
+from django.conf import settings
+from django.core.mail import send_mail
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
@@ -55,6 +57,10 @@ def render_form(request, page_template, ctx):
     )
 
 
+logger = logging.getLogger(__name__)
+SITE_NAME = getattr(settings, "SITE_NAME", "Task Manager")
+
+
 def send_activation_email(request, user):
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = default_token_generator.make_token(user)
@@ -68,13 +74,22 @@ def send_activation_email(request, user):
     }
     subject = f"Activate your {SITE_NAME} account"
     message = render_to_string("emails/activation_email.txt", context)
+
     try:
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
-    except Exception:  # pragma: no cover - email backend specific
+    except Exception:
+        #  Always log the real reason
         logger.exception("Failed to send activation email for %s", user.pk)
+
+        #  In development, fail hard so you SEE the error
+        if settings.DEBUG:
+            raise
+        #  In production, just return; signup view will show a message
+        return False
+
     else:
         log_activity(request, "activation_email_sent", user_id=user.pk)
-
+        return True
 
 def send_welcome_email(user):
     context = {"user": user, "site_name": SITE_NAME}
@@ -96,23 +111,35 @@ def signup(request):
         form = SignupForm(request.POST)
         if form.is_valid():
             user = form.save()
-            send_activation_email(request, user)
+            email_ok = send_activation_email(request, user)
+
             log_activity(
                 request,
                 "signup_submitted",
                 user_id=user.pk,
                 email=user.email,
             )
-            return render(
-                request,
-                "registration/activation_sent.html",
-                {"email": user.email},
-            )
+
+            if email_ok:
+                #  Email sent – standard flow
+                return render(
+                    request,
+                    "registration/activation_sent.html",
+                    {"email": user.email},
+                )
+            else:
+                #  Email failed in production – tell the user and yourself
+                messages.error(
+                    request,
+                    "We couldn't send the activation email right now. "
+                    "Your account was created but is not active yet. "
+                    "Please try again later."
+                )
+                return redirect("login")
     else:
         form = SignupForm()
 
     return render(request, "registration/signup.html", {"form": form})
-
 
 def activate_account(request, uidb64, token):
     try:
