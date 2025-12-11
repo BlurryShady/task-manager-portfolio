@@ -14,6 +14,10 @@ def send_brevo_email(subject: str, text_body: str, to_email: str) -> None:
     Send a plain-text email via Brevo HTTP API.
     Falls back to console backend if no API key is configured.
     """
+
+    # DEBUG: Check if API key is loaded
+    logger.info("BREVO KEY PRESENT? %s", bool(BREVO_API_KEY))
+
     if not BREVO_API_KEY:
         # Fallback: use Django's mail system (console backend in dev)
         from django.core.mail import send_mail
@@ -39,8 +43,13 @@ def send_brevo_email(subject: str, text_body: str, to_email: str) -> None:
 
     try:
         resp = requests.post(BREVO_ENDPOINT, json=payload, headers=headers, timeout=10)
+
+        # DEBUG: Log status code + text from Brevo
+        logger.info("Brevo API response %s: %s", resp.status_code, resp.text)
+
         resp.raise_for_status()
+
     except Exception:
         logger.exception("Failed to send Brevo email to %s", to_email)
-        # DON’T crash signup – just log:
+        # Do NOT crash signup
         return
