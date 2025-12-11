@@ -76,17 +76,21 @@ def send_activation_email(request, user):
     subject = f"Activate your {SITE_NAME} account"
     message = render_to_string("emails/activation_email.txt", context)
 
+    # Use Brevo HTTP helper (no SMTP)
     send_brevo_email(subject, message, user.email)
+
     log_activity(request, "activation_email_sent", user_id=user.pk)
+
 
 def send_welcome_email(user):
     context = {"user": user, "site_name": SITE_NAME}
     subject = f"Welcome to {SITE_NAME}"
     message = render_to_string("emails/welcome_email.txt", context)
 
+    # Use Brevo HTTP helper
     send_brevo_email(subject, message, user.email)
-    log_activity(None, "welcome_email_sent", user_id=user.pk)
 
+    log_activity(None, "welcome_email_sent", user_id=user.pk)
 
 def signup(request):
     if request.user.is_authenticated:
