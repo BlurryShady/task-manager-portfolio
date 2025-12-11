@@ -1,4 +1,5 @@
 import logging
+from .email_utils import send_brevo_email
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login
@@ -75,32 +76,16 @@ def send_activation_email(request, user):
     subject = f"Activate your {SITE_NAME} account"
     message = render_to_string("emails/activation_email.txt", context)
 
-    try:
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
-    except Exception:
-        #  Always log the real reason
-        logger.exception("Failed to send activation email for %s", user.pk)
-
-        #  In development, fail hard so you SEE the error
-        if settings.DEBUG:
-            raise
-        #  In production, just return; signup view will show a message
-        return False
-
-    else:
-        log_activity(request, "activation_email_sent", user_id=user.pk)
-        return True
+    send_brevo_email(subject, message, user.email)
+    log_activity(request, "activation_email_sent", user_id=user.pk)
 
 def send_welcome_email(user):
     context = {"user": user, "site_name": SITE_NAME}
     subject = f"Welcome to {SITE_NAME}"
     message = render_to_string("emails/welcome_email.txt", context)
-    try:
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
-    except Exception:  # pragma: no cover - email backend specific
-        logger.exception("Failed to send welcome email for %s", user.pk)
-    else:
-        log_activity(None, "welcome_email_sent", user_id=user.pk)
+
+    send_brevo_email(subject, message, user.email)
+    log_activity(None, "welcome_email_sent", user_id=user.pk)
 
 
 def signup(request):
