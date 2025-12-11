@@ -74,13 +74,16 @@ def send_activation_email(request, user):
         "site_name": SITE_NAME,
     }
     subject = f"Activate your {SITE_NAME} account"
-    message = render_to_string("emails/activation_email.txt", context)
 
-    # Use Brevo HTTP helper (no SMTP)
-    send_brevo_email(subject, message, user.email)
+    text_message = render_to_string("emails/activation_email.txt", context)
+    html_message = render_to_string("emails/activation_email.html", context)
 
-    log_activity(request, "activation_email_sent", user_id=user.pk)
-
+    try:
+        send_brevo_email(subject, text_message, user.email, html_message)
+        log_activity(request, "activation_email_sent", user_id=user.pk)
+    except Exception:
+        # will also be logged inside send_brevo_email
+        logger.exception("Failed to send activation email for %s", user.pk)
 
 def send_welcome_email(user):
     context = {"user": user, "site_name": SITE_NAME}
@@ -100,7 +103,9 @@ def signup(request):
         form = SignupForm(request.POST)
         if form.is_valid():
             user = form.save()
-            email_ok = send_activation_email(request, user)
+
+            # send activation email
+            send_activation_email(request, user)
 
             log_activity(
                 request,
@@ -109,27 +114,16 @@ def signup(request):
                 email=user.email,
             )
 
-            if email_ok:
-                #  Email sent – standard flow
-                return render(
-                    request,
-                    "registration/activation_sent.html",
-                    {"email": user.email},
-                )
-            else:
-                #  Email failed in production – tell the user and yourself
-                messages.error(
-                    request,
-                    "We couldn't send the activation email right now. "
-                    "Your account was created but is not active yet. "
-                    "Please try again later."
-                )
-                return redirect("login")
+            #  Show the “check your inbox” page instead of redirecting to login
+            return render(
+                request,
+                "registration/activation_sent.html",
+                {"email": user.email},
+            )
     else:
         form = SignupForm()
 
     return render(request, "registration/signup.html", {"form": form})
-
 def activate_account(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
