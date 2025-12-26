@@ -101,6 +101,7 @@ WSGI_APPLICATION = "taskmanager.wsgi.application"
 # Database
 # -------------------------
 DATABASE_URL = os.getenv("DATABASE_URL")
+
 if DATABASE_URL:
     DATABASES = {
         "default": dj_database_url.parse(
@@ -116,7 +117,6 @@ else:
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
-
 
 # -------------------------
 # Password validation
