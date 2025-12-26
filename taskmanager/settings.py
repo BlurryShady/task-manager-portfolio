@@ -12,14 +12,12 @@ from dotenv import load_dotenv
 # Base
 # -------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(BASE_DIR / ".env")
+
+if not os.getenv("DYNO"):
+    load_dotenv(BASE_DIR / ".env")
 
 
 def env_bool(name: str, default: str = "false") -> bool:
-    """
-    Reads boolean-ish environment variables safely.
-    Accepts: 1/true/yes/on (case-insensitive) as True.
-    """
     return os.getenv(name, default).strip().lower() in {"1", "true", "yes", "on"}
 
 
@@ -39,16 +37,14 @@ DEBUG = env_bool("DJANGO_DEBUG", "true")
 # -------------------------
 ALLOWED_HOSTS = split_csv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost")
 
-# Heroku injects this automatically (safe to include if present)
-# (Not required for custom domain, but harmless and helps when opening herokuapp domain)
-if heroku_host := os.getenv("HEROKU_APP_NAME"):
-    ALLOWED_HOSTS.append(f"{heroku_host}.herokuapp.com")
+# Heroku sets this on dynos; helpful for herokuapp.com access
+# If you prefer, you can remove it and rely purely on DJANGO_ALLOWED_HOSTS.
+if os.getenv("DYNO") and os.getenv("HEROKU_APP_NAME"):
+    ALLOWED_HOSTS.append(f"{os.getenv('HEROKU_APP_NAME')}.herokuapp.com")
 
 CSRF_TRUSTED_ORIGINS = split_csv(
     "DJANGO_CSRF_TRUSTED_ORIGINS",
-    "http://127.0.0.1:8000,"
-    "http://localhost:8000,"
-    "https://tasks.blurryshady.dev",
+    "http://127.0.0.1:8000,http://localhost:8000,https://tasks.blurryshady.dev",
 )
 
 
@@ -62,9 +58,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "boards",
     "django.contrib.sites",
-
+    "boards",
 ]
 
 SITE_ID = 1
@@ -122,6 +117,7 @@ else:
         }
     }
 
+
 # -------------------------
 # Password validation
 # -------------------------
@@ -152,7 +148,6 @@ STATICFILES_DIRS = [BASE_DIR / "static"] if (BASE_DIR / "static").exists() else 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# WhiteNoise storage (recommended on Heroku)
 STORAGES = {
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
@@ -161,7 +156,7 @@ STORAGES = {
 
 
 # -------------------------
-# Security headers (Heroku-friendly)
+# Security headers
 # -------------------------
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SESSION_COOKIE_SECURE = not DEBUG
@@ -181,15 +176,9 @@ LOGOUT_REDIRECT_URL = "login"
 # -------------------------
 # Email / notifications (Brevo SMTP)
 # -------------------------
-EMAIL_BACKEND = os.getenv(
-    "EMAIL_BACKEND",
-    "django.core.mail.backends.console.EmailBackend",
-)
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
 
-DEFAULT_FROM_EMAIL = os.getenv(
-    "DEFAULT_FROM_EMAIL",
-    "Task Manager <noreply@taskmanager.local>",
-)
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "Task Manager <noreply@taskmanager.local>")
 
 EMAIL_HOST = os.getenv("EMAIL_HOST", "")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
