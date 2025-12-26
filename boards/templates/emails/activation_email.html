@@ -1,27 +1,45 @@
 <!doctype html>
-<html>
-  <body style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height:1.5;">
-    <p>Hi {{ user.username }},</p>
+<html lang="en">
+  <body style="margin:0;padding:0;background:#ffffff;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.5;color:#111827;">
+    <!-- Preheader (hidden preview text) -->
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
+      Confirm your email to activate your {{ site_name }} account.
+    </div>
 
-    <p>Thanks for joining {{ site_name }}!</p>
+    <div style="padding:24px;">
+      <p style="margin:0 0 12px 0;">Hi {{ user.username }},</p>
 
-    <p>Please confirm your email address by clicking the button below:</p>
+      <p style="margin:0 0 12px 0;">Thanks for joining {{ site_name }}!</p>
 
-    <p>
-      <a href="{{ activation_url }}"
-         style="display:inline-block;padding:10px 18px;background:#2563eb;color:#ffffff;
-                text-decoration:none;border-radius:6px;font-weight:600;">
-        Confirm my email
-      </a>
-    </p>
+      <p style="margin:0 0 16px 0;">Please confirm your email address by clicking the button below:</p>
 
-    <p style="margin-top:16px;">
-      Or copy and paste this link into your browser:<br>
-      <a href="{{ activation_url }}">{{ activation_url }}</a>
-    </p>
+      <!-- Button (table-based for best email client support) -->
+      <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 18px 0;">
+        <tr>
+          <td bgcolor="#2563eb" style="border-radius:6px;">
+            <a href="{{ activation_url|escape }}"
+               style="display:inline-block;padding:10px 18px;color:#ffffff;text-decoration:none;font-weight:600;">
+              Confirm my email
+            </a>
+          </td>
+        </tr>
+      </table>
 
-    <p style="margin-top:24px;">If you didn’t create this account, you can safely ignore this message.</p>
+      <p style="margin:0 0 6px 0;">
+        If the button doesn’t work, copy and paste this link into your browser:
+      </p>
 
-    <p>— The {{ site_name }} team</p>
+      <p style="margin:0 0 20px 0;">
+        <a href="{{ activation_url|escape }}" style="color:#2563eb;text-decoration:underline;">
+          {{ activation_url }}
+        </a>
+      </p>
+
+      <p style="margin:0 0 20px 0;">
+        If you didn’t create this account, you can safely ignore this message.
+      </p>
+
+      <p style="margin:0;">— The {{ site_name }} team</p>
+    </div>
   </body>
 </html>
