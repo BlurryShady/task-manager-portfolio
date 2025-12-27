@@ -4,32 +4,42 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+
   <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
 
-<meta name="description" content="Task Manager — a sleek, glassmorphic productivity board to organize your tasks with clarity and focus.">
-<meta name="keywords" content="Task Manager, Productivity App, Kanban Board, Django, Blurry Shady, Full Stack">
-<meta name="author" content="Blurry Shady">
+  <!-- SEO -->
+  <meta name="description" content="Task Manager — a sleek, glassmorphic productivity board to organize your tasks with clarity and focus.">
+  <meta name="keywords" content="Task Manager, Productivity App, Kanban Board, Django, Blurry Shady, Full Stack">
+  <meta name="author" content="Blurry Shady">
 
-<!-- Open Graph (for link previews) -->
-<meta property="og:title" content="Task Manager by Blurry Shady">
-<meta property="og:description" content="A clean and simple Django-based task manager built by Blurry Shady.">
-<meta property="og:image" content="{% static 'images/preview.png' %}">
-<meta property="og:url" content="https://tasks.blurryshady.dev">
-<meta name="twitter:card" content="summary_large_image">
+  <!-- Open Graph (link previews) -->
+  <meta property="og:title" content="Task Manager by Blurry Shady">
+  <meta property="og:description" content="A clean and simple Django-based task manager built by Blurry Shady.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://tasks.blurryshady.dev">
 
-{% load static %}
+  <!-- Use ABSOLUTE URL for og:image -->
+  <meta property="og:image" content="https://tasks.blurryshady.dev{% static 'img/preview.png' %}">
+  <meta property="og:image:secure_url" content="https://tasks.blurryshady.dev{% static 'img/preview.png' %}">
 
-<link rel="icon" href="{% static 'img/favicon.ico' %}?v=1">
-<link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/favicon-32x32.png' %}?v=1">
-<link rel="icon" type="image/png" sizes="16x16" href="{% static 'img/favicon-16x16.png' %}?v=1">
-<link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}?v=1">
-<link rel="mask-icon" href="{% static 'img/safari-pinned-tab.svg' %}?v=1" color="#0b1220">
-<link rel="manifest" href="{% static 'img/site.webmanifest' %}?v=1">  {# optional #}
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Task Manager by Blurry Shady">
+  <meta name="twitter:description" content="A clean and simple Django-based task manager built by Blurry Shady.">
+  <meta name="twitter:image" content="https://tasks.blurryshady.dev{% static 'img/preview.png' %}">
 
-<!-- helpful for browser UI colors -->
-<meta name="theme-color" content="#0b0f16">
-<meta name="msapplication-TileColor" content="#0b0f16">
-<link rel="shortcut icon" href="{% static 'img/favicon.ico' %}?v=1">  {# old-IE fallback #}
+  <!-- Favicons -->
+  <link rel="icon" href="{% static 'img/favicon.ico' %}?v=1">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/favicon-32x32.png' %}?v=1">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'img/favicon-16x16.png' %}?v=1">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}?v=1">
+  <link rel="mask-icon" href="{% static 'img/safari-pinned-tab.svg' %}?v=1" color="#0b1220">
+  <link rel="manifest" href="{% static 'img/site.webmanifest' %}?v=1">  {# optional #}
+
+  <!-- Browser UI colors -->
+  <meta name="theme-color" content="#0b0f16">
+  <meta name="msapplication-TileColor" content="#0b0f16">
+  <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}?v=1">  {# old-IE fallback #}
 
   {# App CSS (keep last) #}
   <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2025-11-07-2">
@@ -48,6 +58,7 @@
     ></script>
   {% endif %}
 </head>
+
 <body>
 
   <header class="topbar">
