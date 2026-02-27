@@ -46,7 +46,7 @@ if os.getenv("DYNO") and os.getenv("HEROKU_APP_NAME"):
     ALLOWED_HOSTS.append(f"{os.getenv('HEROKU_APP_NAME')}.herokuapp.com")
 
 CSRF_TRUSTED_ORIGINS = split_csv(
-    "DJANGO_CSRF_TRUSTED_ORIGINS",
+    "CSRF_TRUSTED_ORIGINS",
     "http://127.0.0.1:8000,http://localhost:8000,https://tasks.blurryshady.dev",
 )
 
@@ -201,3 +201,28 @@ PLAUSIBLE_SCRIPT = os.getenv("PLAUSIBLE_SCRIPT", "https://plausible.io/js/script
 ANALYTICS_ENABLED = bool(PLAUSIBLE_DOMAIN)
 
 ENABLE_TELEMETRY = env_bool("ENABLE_TELEMETRY", "true")
+
+
+# -------------------------
+# Logging (visible in Render / Heroku logs)
+# -------------------------
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+    },
+}
