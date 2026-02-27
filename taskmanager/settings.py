@@ -28,7 +28,7 @@ def split_csv(name: str, default: str = "") -> list[str]:
 # -------------------------
 # Security
 # -------------------------
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret-key-change-me")
+SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-me")
 DEBUG = env_bool("DJANGO_DEBUG", "true")
 
 
@@ -36,9 +36,9 @@ DEBUG = env_bool("DJANGO_DEBUG", "true")
 # Hosts / CSRF
 # -------------------------
 # Explicitly define allowed hosts. In development, defaults to localhost.
-# In production, you MUST set DJANGO_ALLOWED_HOSTS in your environment variables.
+# In production, you MUST set ALLOWED_HOSTS in your environment variables.
 _default_hosts = "127.0.0.1,localhost" if DEBUG else ""
-ALLOWED_HOSTS = split_csv("DJANGO_ALLOWED_HOSTS", _default_hosts)
+ALLOWED_HOSTS = split_csv("ALLOWED_HOSTS", _default_hosts)
 
 # Heroku sets this on dynos; helpful for herokuapp.com access
 # If you prefer, you can remove it and rely purely on DJANGO_ALLOWED_HOSTS.
