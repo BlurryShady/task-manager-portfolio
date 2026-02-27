@@ -35,7 +35,10 @@ DEBUG = env_bool("DJANGO_DEBUG", "true")
 # -------------------------
 # Hosts / CSRF
 # -------------------------
-ALLOWED_HOSTS = split_csv("DJANGO_ALLOWED_HOSTS", "*" if not DEBUG else "127.0.0.1,localhost")
+# Explicitly define allowed hosts. In development, defaults to localhost.
+# In production, you MUST set DJANGO_ALLOWED_HOSTS in your environment variables.
+_default_hosts = "127.0.0.1,localhost" if DEBUG else ""
+ALLOWED_HOSTS = split_csv("DJANGO_ALLOWED_HOSTS", _default_hosts)
 
 # Heroku sets this on dynos; helpful for herokuapp.com access
 # If you prefer, you can remove it and rely purely on DJANGO_ALLOWED_HOSTS.
